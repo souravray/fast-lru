@@ -8,11 +8,14 @@ type Node struct {
   // parent List
   list *List
 
+  // The stored key (interface)
+  Key interface{}
+
   // The stored value (interface)
   Value interface{}
 }
 
-func newNode(val interface{}) *Node {
-  n := &Node{Value:val}
+func newNode(key, val interface{}) *Node {
+  n := &Node{Key: key, Value:val}
   return n
 }

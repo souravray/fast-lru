@@ -43,27 +43,27 @@ func TestList(t *testing.T) {
   checkConsistency(t, l, []*Node{})
   
   // with multiple nodes
-  n1 := l.insertAtFront("Value 1")
+  n1 := l.insertAtFront(nil, "Value 1")
   checkLength(t, l, 1)
   checkConsistency(t, l, []*Node{ n1})
-  n2 := l.insertAtFront("Value 2")
+  n2 := l.insertAtFront(nil, "Value 2")
   checkLength(t, l, 2)
   checkConsistency(t, l, []*Node{ n2, n1})
-  n3 := l.insertAtFront("Value 3")
+  n3 := l.insertAtFront(nil, "Value 3")
   checkLength(t, l, 3)
   checkConsistency(t, l, []*Node{ n3, n2, n1})
-  n4 := l.insertAtFront("Value 4")
+  n4 := l.insertAtFront(nil, "Value 4")
   checkLength(t, l, 4)
   checkConsistency(t, l, []*Node{ n4, n3, n2, n1})
 }
 
 func TestModifyList(t *testing.T) {
   l := newList()
-  n1 := l.insertAtFront("Value 1")
-  n2 := l.insertAtFront("Value 2")
-  n3 := l.insertAtFront("Value 3")
-  n4 := l.insertAtFront("Value 4")
-  n5 := l.insertAtFront("Value 5")
+  n1 := l.insertAtFront("Key1", "Value 1")
+  n2 := l.insertAtFront("Key2", "Value 2")
+  n3 := l.insertAtFront("Key3", "Value 3")
+  n4 := l.insertAtFront("Key4", "Value 4")
+  n5 := l.insertAtFront("Key5", "Value 5")
   checkLength(t, l, 5)
   checkConsistency(t, l, []*Node{ n5, n4, n3, n2, n1})
 

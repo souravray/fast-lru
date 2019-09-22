@@ -35,8 +35,8 @@ func (l *List) isValidMember(n *Node) bool {
 
 // insertAtFront method will always insert at
 // the start of the list - implemented for LRU
-func (l *List) insertAtFront(val interface{}) *Node {
-  n := newNode(val)
+func (l *List) insertAtFront(key, val interface{}) *Node {
+  n := newNode(key, val)
   // take reference of cuurent
   // 1st node of list
   fn := l.root.next
@@ -54,7 +54,7 @@ func (l *List) insertAtFront(val interface{}) *Node {
 // node to the start of list.
 func (l *List) moveToFront(n *Node) *Node {
   if !l.isValidMember(n) {
-    return n
+    return nil
   }
   // don't change anything, if the node
   // is already at the start of the list
