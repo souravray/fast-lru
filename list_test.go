@@ -1,9 +1,7 @@
 package lru
 
-import (
-  "testing"
-  "fmt"
-)
+import "testing"
+/* test helper methods */
 func checkLength(t *testing.T, l *List, len int) bool {
   if l.len != len {
     t.Errorf("List length is %d, expected %d", l.len, len)
@@ -21,9 +19,7 @@ func checkConsistency(t *testing.T, l *List, ns []*Node) {
     return
   }
   pn := &l.root
-  fmt.Printf("\n\n\t%p  p-> %p n-> %p\n", &l.root, l.root.prev, l.root.next)
   for i, n := range ns {
-    fmt.Printf("\t%p  p-> %p n-> %p\n", n, n.prev, n.next)
     if n.prev != pn {
       t.Errorf("Inconsistency at [%d]th node (%p).prev = %p, expected %p", i, n, n.prev, pn)
     }
@@ -32,13 +28,14 @@ func checkConsistency(t *testing.T, l *List, ns []*Node) {
     }
     if i == c-1 {
       if n.next != &l.root || n != l.root.prev {
-        t.Error("List is nit circular")
+        t.Error("List is not circular")
       }
     }
     pn = n
   }
 }
 
+/*test cases*/
 func TestList(t *testing.T) {
   l := newList()
   // at zero node
