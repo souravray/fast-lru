@@ -99,3 +99,47 @@ func (l *List) removeFromBack() *Node {
 
   return l.remove(ln)
 }
+
+// Add a iterator interface for the list
+type ListIterator struct {
+  direction string
+  current *Node
+  index int
+  list *List
+}
+
+// Iterate method takes a direction string
+// and an ListIterator instance
+func (l *List) Iterate(dir string) *ListIterator {
+  if dir!="forward" && dir!="backward" {
+    dir = "forward"
+  }                                              
+  li := &ListIterator{
+    direction: dir,
+    list: l,
+    index: -1,
+    current: &l.root,
+  }
+  return li
+}
+
+func (li *ListIterator) Value() (int, *Node) {
+  if li.current == &li.list.root {
+    return li.index, nil
+  }
+  return li.index, li.current
+}
+
+func (li *ListIterator) Next() bool {
+  li.index++
+  if li.direction == "forward"{
+    li.current = li.current.next
+  } else {
+    li.current = li.current.prev
+  }
+  if li.current == &li.list.root {
+    return false
+  }
+  return true
+}
+

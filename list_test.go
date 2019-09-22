@@ -1,10 +1,11 @@
 package lru
 
 import "testing"
+
 /* test helper methods */
-func checkLength(t *testing.T, l *List, len int) bool {
-  if l.len != len {
-    t.Errorf("List length is %d, expected %d", l.len, len)
+func checkLength(t *testing.T, l *List, ln int) bool {
+  if l.len != ln {
+    t.Errorf("List length is %d, expected %d", l.len, ln)
     return false
   }
   return true
@@ -85,4 +86,31 @@ func TestModifyList(t *testing.T) {
   l.moveToFront(n4)
   checkLength(t, l, 2)
   checkConsistency(t, l, []*Node{ n3, n5})
+}
+
+func TestListIterator(t *testing.T) {
+  l := newList()
+  n1 := l.insertAtFront("Key1", "Value 1")
+  n2 := l.insertAtFront("Key2", "Value 2")
+  n3 := l.insertAtFront("Key3", "Value 3")
+  n4 := l.insertAtFront("Key4", "Value 4")
+  n5 := l.insertAtFront("Key5", "Value 5")
+
+  nArr := []*Node{ n5, n4, n3, n2, n1}
+  fli :=  l.Iterate("") // default should be forward
+  for fli.Next() {
+    i,n := fli.Value()
+    if n != nArr[i] {
+       t.Errorf("Iterator at %d returns node %p, expected %p", i, n, nArr[i])
+    }
+  }
+
+  nRevArr := []*Node{ n1, n2, n3, n4, n5}
+  rli :=  l.Iterate("backward")
+  for rli.Next() {
+    i,n := rli.Value()
+    if n != nRevArr[i] {
+       t.Errorf("Iterator at %d returns node %p, expected %p", i, n, nRevArr[i])
+    }
+  }
 }
