@@ -4,16 +4,16 @@ package lru
 list since we don't want to use container/list
 for the assignment ;)
 */
-type List struct {
-	root Node // sentinel node
+type list struct {
+	root node // sentinel node
 	len  int
 }
 
 // newList will create and initializ
 // a doubly linked list instance
-func newList() *List {
-	l := &List{len: 0}
-	l.root = Node{}
+func newList() *list {
+	l := &list{len: 0}
+	l.root = node{}
 	l.root.next = &l.root
 	l.root.prev = &l.root
 	return l
@@ -24,7 +24,7 @@ func newList() *List {
 // isValidMember method will return true,
 // if the node belongs to the list and it
 // is not the root node.
-func (l *List) isValidMember(n *Node) bool {
+func (l *list) isValidMember(n *node) bool {
 	if n.list != l || n == &l.root {
 		return false
 	}
@@ -34,8 +34,8 @@ func (l *List) isValidMember(n *Node) bool {
 /* getter setter methods */
 
 // insertAtFront method will always insert at
-// the start of the list - implemented for LRU
-func (l *List) insertAtFront(key, val interface{}) *Node {
+// the start of the list - implemented for baseLRU
+func (l *list) insertAtFront(key, val interface{}) *node {
 	n := newNode(key, val)
 	// take reference of cuurent
 	// 1st node of list
@@ -52,7 +52,7 @@ func (l *List) insertAtFront(key, val interface{}) *Node {
 
 // moveToFront method moves an exsiting
 // node to the start of list.
-func (l *List) moveToFront(n *Node) *Node {
+func (l *list) moveToFront(n *node) *node {
 	if !l.isValidMember(n) {
 		return nil
 	}
@@ -76,7 +76,7 @@ func (l *List) moveToFront(n *Node) *Node {
 
 // remove method deletes an exsiting
 // node from the list.
-func (l *List) remove(n *Node) *Node {
+func (l *list) remove(n *node) *node {
 	if !l.isValidMember(n) {
 		return nil
 	}
@@ -92,7 +92,7 @@ func (l *List) remove(n *Node) *Node {
 
 // removeFromBack method delete the last
 // node of the list.
-func (l *List) removeFromBack() *Node {
+func (l *list) removeFromBack() *node {
 	// take reference of current
 	// last node of list
 	ln := l.root.prev
@@ -101,20 +101,20 @@ func (l *List) removeFromBack() *Node {
 }
 
 // Add a iterator interface for the list
-type ListIterator struct {
+type listIterator struct {
 	direction string
-	current   *Node
+	current   *node
 	index     int
-	list      *List
+	list      *list
 }
 
-// Iterate method takes a direction string
-// and an ListIterator instance
-func (l *List) Iterate(dir string) *ListIterator {
+// iterate method takes a direction string
+// and an listIterator instance
+func (l *list) iterate(dir string) *listIterator {
 	if dir != "forward" && dir != "backward" {
 		dir = "forward"
 	}
-	li := &ListIterator{
+	li := &listIterator{
 		direction: dir,
 		list:      l,
 		index:     -1,
@@ -123,14 +123,14 @@ func (l *List) Iterate(dir string) *ListIterator {
 	return li
 }
 
-func (li *ListIterator) Value() (int, *Node) {
+func (li *listIterator) value() (int, *node) {
 	if li.current == &li.list.root {
 		return li.index, nil
 	}
 	return li.index, li.current
 }
 
-func (li *ListIterator) Next() bool {
+func (li *listIterator) next() bool {
 	li.index++
 	if li.direction == "forward" {
 		li.current = li.current.next

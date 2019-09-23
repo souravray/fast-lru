@@ -3,11 +3,11 @@ package lru
 import "testing"
 
 /* test helper methods */
-func checkCacheLength(t *testing.T, c *LRU, ln int) bool {
-	llen := c.Len()
+func checkCacheLength(t *testing.T, c *baseLRU, ln int) bool {
+	llen := c.len()
 	mlen := len(c.hmap)
 	if llen != mlen {
-		t.Errorf("List length (%d) doesn't match with the map length(%d)", llen, mlen)
+		t.Errorf("list length (%d) doesn't match with the map length(%d)", llen, mlen)
 		return false
 	}
 
@@ -18,8 +18,8 @@ func checkCacheLength(t *testing.T, c *LRU, ln int) bool {
 	return true
 }
 
-func checkKeyOrder(t *testing.T, c *LRU, odr string, keys []string) bool {
-	okeys, err := c.Keys(odr)
+func checkKeyOrder(t *testing.T, c *baseLRU, odr string, keys []string) bool {
+	okeys, err := c.keys(odr)
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return false
@@ -40,35 +40,35 @@ func checkKeyOrder(t *testing.T, c *LRU, odr string, keys []string) bool {
 
 /*test cases*/
 func TestCache(t *testing.T) {
-	c, err := newLRU(0)
+	c, err := newBaseLRU(0)
 	if err == nil {
 		t.Errorf("Should throw error")
 	}
 
-	c, err = newLRU(2)
+	c, err = newBaseLRU(2)
 	if err != nil {
 		t.Errorf("err: %v", err)
 	}
-	c.Add("Key1", "Value 1")
+	c.add("Key1", "Value 1")
 	checkCacheLength(t, c, 1)
-	c.Add("Key1", "Value 1a")
+	c.add("Key1", "Value 1a")
 	checkCacheLength(t, c, 1)
-	c.Add("Key2", "Value 2")
+	c.add("Key2", "Value 2")
 	checkCacheLength(t, c, 2)
-	c.Add("Key3", "Value 3")
+	c.add("Key3", "Value 3")
 	checkCacheLength(t, c, 2)
 }
 
 func TestOrderedKeys(t *testing.T) {
-	c, _ := newLRU(3)
+	c, _ := newBaseLRU(3)
 
-	c.Add("Key1", "Value 1")
-	c.Add("Key2", "Value 2")
-	c.Add("Key1", "Value 1a")
-	c.Add("Key3", "Value 3")
-	c.Fetch("Key2")
+	c.add("Key1", "Value 1")
+	c.add("Key2", "Value 2")
+	c.add("Key1", "Value 1a")
+	c.add("Key3", "Value 3")
+	c.fetch("Key2")
 
-	_, err := c.Keys("")
+	_, err := c.keys("")
 	if err == nil {
 		t.Error("Keys method should throw error if unsupported order directive is used")
 	}
@@ -77,34 +77,34 @@ func TestOrderedKeys(t *testing.T) {
 	checkKeyOrder(t, c, "desc", []string{"Key1", "Key3", "Key2"})
 }
 
-func TestKeyExist(t *testing.T) {
-	c, _ := newLRU(3)
+func TestKeyexist(t *testing.T) {
+	c, _ := newBaseLRU(3)
 
-	c.Add("Key1", "Value 1")
-	c.Add("Key2", "Value 2")
-	c.Add("Key1", "Value 1a")
-	ok := c.Exist("Key2")
+	c.add("Key1", "Value 1")
+	c.add("Key2", "Value 2")
+	c.add("Key1", "Value 1a")
+	ok := c.exist("Key2")
 	if !ok {
-		t.Error("c.Exist(\"Key2\") return false, expected true")
+		t.Error("c.exist(\"Key2\") return false, expected true")
 	}
-	c.Add("Key3", "Value 3")
+	c.add("Key3", "Value 3")
 	checkKeyOrder(t, c, "asc", []string{"Key3", "Key1", "Key2"})
 
-	ok = c.Exist("Key4")
+	ok = c.exist("Key4")
 	if ok {
-		t.Error("c.Exist(\"Key4\") return true, expected false")
+		t.Error("c.exist(\"Key4\") return true, expected false")
 	}
 }
 
 func TestFetch(t *testing.T) {
-	c, _ := newLRU(3)
+	c, _ := newBaseLRU(3)
 
-	c.Add("Key1", "Value 1")
-	c.Add("Key2", "Value 2")
-	c.Add("Key3", "Value 3")
-	c.Add("Key1", "Value 1a")
+	c.add("Key1", "Value 1")
+	c.add("Key2", "Value 2")
+	c.add("Key3", "Value 3")
+	c.add("Key1", "Value 1a")
 
-	val, ok := c.Fetch("Key2")
+	val, ok := c.fetch("Key2")
 	if val == nil || !ok {
 		t.Error("Fetch return false, expected true")
 	}
@@ -113,31 +113,31 @@ func TestFetch(t *testing.T) {
 	}
 	checkKeyOrder(t, c, "asc", []string{"Key2", "Key1", "Key3"})
 
-	c.Add("Key4", "Value 4")
-	val, ok = c.Fetch("Key3")
+	c.add("Key4", "Value 4")
+	val, ok = c.fetch("Key3")
 	if val != nil || ok {
 		t.Error("Fech shouldn't return value for Key3")
 	}
 }
 
-func TestRemove(t *testing.T) {
-	c, _ := newLRU(3)
+func Testremove(t *testing.T) {
+	c, _ := newBaseLRU(3)
 
-	c.Add("Key1", "Value 1")
-	c.Add("Key2", "Value 2")
-	c.Add("Key3", "Value 3")
-	c.Add("Key4", "Value 4")
+	c.add("Key1", "Value 1")
+	c.add("Key2", "Value 2")
+	c.add("Key3", "Value 3")
+	c.add("Key4", "Value 4")
 
-	ok := c.Remove("Key1")
+	ok := c.remove("Key1")
 	if ok {
 		t.Error("Remove should not delete a non exsiting key")
 	}
 
-	ok = c.Remove("Key3")
+	ok = c.remove("Key3")
 	if !ok {
 		t.Error("Remove should not delete an exsiting key")
 	}
-	if c.Len() != 2 {
-		t.Errorf("Expected 2 lement in catche, got %d", c.Len())
+	if c.len() != 2 {
+		t.Errorf("Expected 2 lement in catche, got %d", c.len())
 	}
 }

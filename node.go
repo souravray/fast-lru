@@ -2,20 +2,20 @@ package lru
 
 /* An implementation of linked-list node */
 
-type Node struct {
-	next, prev *Node
+type node struct {
+	next, prev *node
 
-	// parent List
-	list *List
+	// parent list
+	list *list
 
 	// The stored key (interface)
-	Key interface{}
+	key interface{}
 
 	// The stored value (interface)
-	Value interface{}
+	value interface{}
 }
 
-func newNode(key, val interface{}) *Node {
-	n := &Node{Key: key, Value: val}
+func newNode(key, val interface{}) *node {
+	n := &node{key: key, value: val}
 	return n
 }

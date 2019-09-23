@@ -78,16 +78,16 @@
   list since we don't want to use container/list
   for the assignment ;)
 */
-type List struct {
-  root Node // sentinel node
+type list struct {
+  root node // sentinel node
   len  int
 }
 
 // newList will create and initializ
 // a doubly linked list instance
-func newList() *List <span class="cov8" title="1">{
-  l := &amp;List{ len: 0}
-  l.root = Node{}
+func newList() *list <span class="cov8" title="1">{
+  l := &amp;list{ len: 0}
+  l.root = node{}
   l.root.next = &amp;l.root
   l.root.prev = &amp;l.root
   return l
@@ -98,7 +98,7 @@ func newList() *List <span class="cov8" title="1">{
 // isValidMember method will return true,
 // if the node belongs to the list and it
 // is not the root node.
-func (l *List) isValidMember(n *Node) bool <span class="cov8" title="1">{
+func (l *list) isValidMember(n *node) bool <span class="cov8" title="1">{
   if n.list != l ||  n == &amp;l.root </span><span class="cov8" title="1">{
     return false
   }</span>
@@ -108,8 +108,8 @@ func (l *List) isValidMember(n *Node) bool <span class="cov8" title="1">{
 /* getter setter methods */
 
 // insertAtFront method will always insert at
-// the start of the list - implemented for LRU
-func (l *List) insertAtFront(key, val interface{}) *Node <span class="cov8" title="1">{
+// the start of the list - implemented for baseLRU
+func (l *list) insertAtFront(key, val interface{}) *node <span class="cov8" title="1">{
   n := newNode(key, val)
   // take reference of cuurent
   // 1st node of list
@@ -126,7 +126,7 @@ func (l *List) insertAtFront(key, val interface{}) *Node <span class="cov8" titl
 
 // moveToFront method moves an exsiting 
 // node to the start of list.
-func (l *List) moveToFront(n *Node) *Node <span class="cov8" title="1">{
+func (l *list) moveToFront(n *node) *node <span class="cov8" title="1">{
   if !l.isValidMember(n) </span><span class="cov8" title="1">{
     return nil
   }</span>
@@ -150,7 +150,7 @@ func (l *List) moveToFront(n *Node) *Node <span class="cov8" title="1">{
 
 // remove method deletes an exsiting 
 // node from the list.
-func (l *List) remove(n *Node) *Node <span class="cov8" title="1">{
+func (l *list) remove(n *node) *node <span class="cov8" title="1">{
   if !l.isValidMember(n) </span><span class="cov0" title="0">{
     return nil
   }</span>
@@ -166,7 +166,7 @@ func (l *List) remove(n *Node) *Node <span class="cov8" title="1">{
 
 // removeFromBack method delete the last 
 // node of the list.
-func (l *List) removeFromBack() *Node <span class="cov8" title="1">{
+func (l *list) removeFromBack() *node <span class="cov8" title="1">{
   // take reference of current
   // last node of list
   ln := l.root.prev
@@ -175,20 +175,20 @@ func (l *List) removeFromBack() *Node <span class="cov8" title="1">{
 }</span>
 
 // Add a iterator interface for the list
-type ListIterator struct {
+type listIterator struct {
   direction string
-  current *Node
+  current *node
   index int
-  list *List
+  list *list
 }
 
 // Iterate method takes a direction string
-// and an ListIterator instance
-func (l *List) Iterate(dir string) *ListIterator <span class="cov8" title="1">{
+// and an listIterator instance
+func (l *list) Iterate(dir string) *listIterator <span class="cov8" title="1">{
   if dir!="forward" &amp;&amp; dir!="backward" </span><span class="cov8" title="1">{
     dir = "forward"
   }</span>                                              
-  <span class="cov8" title="1">li := &amp;ListIterator{
+  <span class="cov8" title="1">li := &amp;listIterator{
     direction: dir,
     list: l,
     index: -1,
@@ -197,14 +197,14 @@ func (l *List) Iterate(dir string) *ListIterator <span class="cov8" title="1">{
   return li</span>
 }
 
-func (li *ListIterator) Value() (int, *Node) <span class="cov8" title="1">{
+func (li *listIterator) Value() (int, *node) <span class="cov8" title="1">{
   if li.current == &amp;li.list.root </span><span class="cov0" title="0">{
     return li.index, nil
   }</span>
   <span class="cov8" title="1">return li.index, li.current</span>
 }
 
-func (li *ListIterator) Next() bool <span class="cov8" title="1">{
+func (li *listIterator) Next() bool <span class="cov8" title="1">{
   li.index++
   if li.direction == "forward"</span><span class="cov8" title="1">{
     li.current = li.current.next
@@ -223,33 +223,33 @@ func (li *ListIterator) Next() bool <span class="cov8" title="1">{
 
 import "errors"
 
-// Base LRU implementation is not
+// Base baseLRU implementation is not
 // safe for concurent operations
-type LRU struct {
-  list *List
-  hmap map[interface{}]*Node
+type baseLRU struct {
+  list *list
+  hmap map[interface{}]*node
   maxSize int
 }
 
-func newLRU(s int) (*LRU, error) <span class="cov8" title="1">{
+func newBaseLRU(s int) (*baseLRU, error) <span class="cov8" title="1">{
   if s &lt; 1 </span><span class="cov8" title="1">{
-    return nil, errors.New("LRU size should be at least 1")
+    return nil, errors.New("baseLRU size should be at least 1")
   }</span>
-  <span class="cov8" title="1">c:= &amp;LRU{
+  <span class="cov8" title="1">c:= &amp;baseLRU{
     newList(),
-    make(map[interface{}]*Node, s),
+    make(map[interface{}]*node, s),
     s,
   }
   return c, nil</span>
 }
 
 // Len method returns the numbers of items in the cache  
-func (l *LRU) Len() int <span class="cov8" title="1">{
+func (l *baseLRU) Len() int <span class="cov8" title="1">{
   return l.list.len
 }</span>
 
 // Add method takes a key and value and add it to cache
-func (l *LRU) Add(key, val interface{}) <span class="cov8" title="1">{
+func (l *baseLRU) Add(key, val interface{}) <span class="cov8" title="1">{
   // Check for existing item
   if n, ok := l.hmap[key]; ok </span><span class="cov8" title="1">{
     l.list.moveToFront(n)
@@ -269,7 +269,7 @@ func (l *LRU) Add(key, val interface{}) <span class="cov8" title="1">{
 
 // Exit method takes a key ane returns boolean value 
 // of cache hit/miss without updating the iteam sequence
-func (l *LRU) Exist(key interface{}) (bool) <span class="cov8" title="1">{
+func (l *baseLRU) Exist(key interface{}) (bool) <span class="cov8" title="1">{
   if _, ok := l.hmap[key]; ok </span><span class="cov8" title="1">{
     return true
   }</span>
@@ -279,7 +279,7 @@ func (l *LRU) Exist(key interface{}) (bool) <span class="cov8" title="1">{
 // Fetch method takes a key, move the item to front, 
 // and returns the value or nil and a boolean value
 // of cache hit/miss
-func (l *LRU) Fetch(key interface{}) (interface{}, bool) <span class="cov8" title="1">{
+func (l *baseLRU) Fetch(key interface{}) (interface{}, bool) <span class="cov8" title="1">{
   if n, ok := l.hmap[key]; ok </span><span class="cov8" title="1">{
     n = l.list.moveToFront(n)
     if n == nil </span><span class="cov0" title="0">{
@@ -293,8 +293,8 @@ func (l *LRU) Fetch(key interface{}) (interface{}, bool) <span class="cov8" titl
 // Keys method takes an order direction 'asc' or 'desc', 
 // and all keys in order of their recency. asc will return
 // the most recent first, desc will return oldest first
-func (l *LRU) Keys(odr string) ([]interface{}, error) <span class="cov8" title="1">{
-  var li *ListIterator
+func (l *baseLRU) Keys(odr string) ([]interface{}, error) <span class="cov8" title="1">{
+  var li *listIterator
   if odr == "asc" </span><span class="cov8" title="1">{
     li = l.list.Iterate("forward")
   }</span> else<span class="cov8" title="1"> if odr == "desc" </span><span class="cov8" title="1">{
@@ -312,7 +312,7 @@ func (l *LRU) Keys(odr string) ([]interface{}, error) <span class="cov8" title="
 
 // Remove method deletes the provided key from the cache,
 // returns boolean sucess/notf ound
-func (l *LRU) Remove(key interface{}) bool <span class="cov8" title="1">{
+func (l *baseLRU) Remove(key interface{}) bool <span class="cov8" title="1">{
   if n, ok := l.hmap[key]; ok </span><span class="cov8" title="1">{
     l.list.remove(n)
     delete(l.hmap, key)
@@ -326,11 +326,11 @@ func (l *LRU) Remove(key interface{}) bool <span class="cov8" title="1">{
 
 /* An implementation of linked-list node */
 
-type Node struct {
-  next, prev *Node
+type node struct {
+  next, prev *node
 
-  // parent List
-  list *List
+  // parent list
+  list *list
 
   // The stored key (interface)
   Key interface{}
@@ -339,8 +339,8 @@ type Node struct {
   Value interface{}
 }
 
-func newNode(key, val interface{}) *Node <span class="cov8" title="1">{
-  n := &amp;Node{Key: key, Value:val}
+func newNode(key, val interface{}) *node <span class="cov8" title="1">{
+  n := &amp;node{Key: key, Value:val}
   return n
 }</span>
 </pre>
@@ -351,7 +351,7 @@ func newNode(key, val interface{}) *Node <span class="cov8" title="1">{
 	(function() {
 		var files = document.getElementById('files');
 		var visible;
-		files.addEventListener('change', onChange, false);
+		files.addEventlistener('change', onChange, false);
 		function select(part) {
 			if (visible)
 				visible.style.display = 'none';
