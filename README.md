@@ -54,7 +54,7 @@ Unit test code coverage is 70.2%, and thread safe methods doesn't have separate 
 
 
 ## Benchmarking
-At best-case scinarions the LRU perfoms 180 ns/op (in avarage). You can run the benchmark tests by
+At best-case scinarions the LRU perfoms 180 ns/op (on avarage). You can run the benchmark tests by
 ```
 go test -bench=. -benchtime=1s
 ``` 
